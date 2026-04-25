@@ -1,0 +1,13 @@
+<Solution>
+  <Configurations>
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Project Path="deps/HugoUtils/HugoUtils.vcxproj" Id="351bb40b-1e2f-42b9-9145-d4079e5efc93" />
+  <Project Path="src/PEInside/PEInside.vcxproj" Id="c13b5fdb-be51-43eb-88e2-e591223c164d">
+    <BuildDependency Project="deps/HugoUtils/HugoUtils.vcxproj" />
+  </Project>
+  <Project Path="src/PEOutside/PEOutside.vcxproj" Id="0cd6ae9f-c62e-4ab7-889b-e68530c33418">
+    <BuildDependency Project="deps/HugoUtils/HugoUtils.vcxproj" />
+  </Project>
+</Solution>
