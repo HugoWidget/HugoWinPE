@@ -19,7 +19,7 @@ namespace fs = std::filesystem;
 using namespace WinUtils;
 using namespace std;
 
-// ========== 常量定义 ==========
+// 常量定义
 constexpr wchar_t PE_DIR_NAME[] = L"HugoWinPE";
 constexpr wchar_t PE_DIR_NAME2[] = L":\\HugoWinPE\\";
 constexpr wchar_t PE_BOOT_ENTRY_NAME[] = L"Ramdisk(HugoWinPE)";
@@ -30,7 +30,7 @@ constexpr wchar_t BOOT_WIM[] = L"boot.wim";
 constexpr wchar_t BOOT_SDI[] = L"boot.sdi";
 constexpr wchar_t RAMDISK_OPTIONS_ID[] = L"{ramdiskoptions}";
 
-// ========== 辅助函数：执行命令 ==========
+// 执行命令
 void ExecCmd(const wstring& cmd) {
 	wcout << L"[执行] " << cmd << L'\n';
 	if (int ret = _wsystem(cmd.c_str()); ret != 0) {
@@ -54,14 +54,14 @@ string ExecCmdAndCaptureOutput(const wstring& cmd) {
 	return result;
 }
 
-// ========== 字符串工具 ==========
+// 字符串工具
 string ExtractUUID(const string& output) {
 	size_t start = output.find('{');
 	size_t end = output.find('}');
 	return (start == string::npos || end == string::npos) ? "" : output.substr(start, end - start + 1);
 }
 
-// ========== 目录/文件操作 ==========
+// 目录/文件操作
 void CreateDir(const fs::path& path) {
 	if (!fs::exists(path)) {
 		fs::create_directories(path);
@@ -99,13 +99,13 @@ bool CopyDirectoryContents(const fs::path& srcDir, const fs::path& dstDir) {
 	return success;
 }
 
-// ========== 驱动器验证 ==========
+// 驱动器验证
 bool ValidateDrive(wchar_t c) {
 	c = towupper(c);
 	return c >= L'C' && c <= L'Z';
 }
 
-// ========== 查找 HugoWinPE 目录 ==========
+// 查找 HugoWinPE 目录
 optional<fs::path> FindHugoWinPEDirectory() {
 	WCHAR drives[256] = {};
 	if (!GetLogicalDriveStringsW(ARRAYSIZE(drives), drives)) {
@@ -122,7 +122,7 @@ optional<fs::path> FindHugoWinPEDirectory() {
 	return nullopt;
 }
 
-// ========== BCD 备份与恢复 ==========
+// BCD 备份与恢复
 void BackupBCD(const fs::path& backupPath) {
 	wcout << L"[备份] 系统BCD -> " << backupPath.wstring() << L'\n';
 	ExecCmd(L"bcdedit /export \"" + backupPath.wstring() + L'"');
@@ -153,7 +153,7 @@ bool RestoreBCD(const fs::path& backupPath) {
 	return true;
 }
 
-// ========== 生成 peconfig.ini ==========
+// 生成 peconfig.ini
 void GeneratePEConfig(const fs::path& iniPath) {
 	wcout << L"\n===== PE 配置生成 =====\n";
 	wchar_t c_unfreeze, c_rename, c_link;
@@ -176,7 +176,7 @@ void GeneratePEConfig(const fs::path& iniPath) {
 	wcout << L"[成功] 生成配置文件: " << iniPath.wstring() << L'\n';
 }
 
-// ========== 检查启动项状态 ==========
+// 检查启动项状态
 bool CheckRamdiskOptionsExists() {
 	string output = ExecCmdAndCaptureOutput(L"bcdedit /enum " + wstring(RAMDISK_OPTIONS_ID));
 	return output.find("标识符") != string::npos || output.find("Identifier") != string::npos;
@@ -195,7 +195,7 @@ wstring GetPEBootEntryUUID() {
 	return ConvertString(ExtractUUID(output.substr(pos)));
 }
 
-// ========== 创建 PE 启动项 ==========
+// 创建 PE 启动项
 bool CreatePEBoot(const fs::path& peDir, wstring& outUUID) {
 	fs::path path_sdi = peDir / BOOT_SDI;
 	fs::path path_wim = peDir / BOOT_WIM;
@@ -249,7 +249,7 @@ bool CreatePEBoot(const fs::path& peDir, wstring& outUUID) {
 	return true;
 }
 
-// ========== 设置启动顺序并重启 ==========
+// 设置启动顺序并重启
 void SetBootSequenceToPEAndRestart(const wstring& uuid) {
 	if (uuid.empty()) {
 		wcerr << L"[错误] UUID 为空，无法设置启动顺序。\n";
@@ -269,7 +269,7 @@ void ManualBootToPE() {
 	ExecCmd(L"shutdown /r /t 0");
 }
 
-// ========== 查询 BCD 状态 ==========
+// 查询 BCD 状态
 void QueryBCDStatus() {
 	string output = ExecCmdAndCaptureOutput(L"bcdedit /enum");
 	wcout << L"\n===== BCD 启动项列表 =====\n";
@@ -277,7 +277,7 @@ void QueryBCDStatus() {
 	wcout << L"[状态] HugoWinPE 启动项：" << (IsPEBootRegistered() ? L"已注册" : L"未注册") << L'\n';
 }
 
-// ========== 首次安装：复制自身及依赖到目标盘 ==========
+// 首次安装：复制自身及依赖到目标盘
 bool FirstTimeInstall() {
 	fs::path currentDir = GetCurrentProcessDir();
 	fs::path src_sdi = currentDir / BOOT_SDI;
@@ -322,7 +322,7 @@ bool FirstTimeInstall() {
 	return true;
 }
 
-// ========== 清理功能（命令行 /cleanup）==========
+// 清理功能（命令行 /cleanup）==========
 void PerformCleanup(const fs::path& peDir) {
 	RestoreBCD(peDir / BACKUP_FILE_NAME);
 
@@ -338,10 +338,10 @@ void PerformCleanup(const fs::path& peDir) {
 	}
 }
 
-// ========== 交互菜单 ==========
-enum class MenuAction { AutoRun=1, Config, Query, RegisterPE, ManualBoot, Backup, Restore, Exit };
+// 交互菜单
+enum class MenuAction { Exit = 0, AutoRun = 1, Config, Query, RegisterPE, ManualBoot, Backup, Restore };
 void ShowMenu() {
-	wcout << L"========== HugoWinPE PEOutside ==========\n";
+	wcout << L" ===== HugoWinPE PEOutside  =====\n";
 	wcout << L"1. 自动化           - 立即重启，自动进入\n";
 	wcout << L"2. 配置             - 配置WinPE行为\n";
 	wcout << L"3. 查询             - 查询注册状态\n";
@@ -455,20 +455,67 @@ bool RunMenuLoop(const fs::path& peDir) {
 	return true;
 }
 
-// ========== 主函数 ==========
+// 主函数
 int wmain(int argc, wchar_t* argv[]) {
 	RequireAdminPrivilege(true);
 	Console console;
 	console.setLocale();
 
 	CmdParser parser;
-	if (!parser.parse(GetCommandLine())) return 0;
+	if (!parser.parse(ExtractArguments(GetCommandLine()))) return 0;
 
 	fs::path currentExeDir = GetCurrentProcessDir();
-	bool isInsidePEDir = (currentExeDir.wstring().substr(1) == PE_DIR_NAME2);  // 检查是否在 HugoWinPE 目录内
+	bool isInsidePEDir = (currentExeDir.wstring().substr(1) == PE_DIR_NAME2);
+
+	optional<fs::path> existingPEDir = FindHugoWinPEDirectory();
+
+	// 确定最终使用的 PE 目录
+	fs::path peDir;
+	if (isInsidePEDir) {
+		peDir = currentExeDir;
+	}
+	else if (existingPEDir.has_value()) {
+		peDir = *existingPEDir;
+		wcout << L"[找到] PE 目录: " << peDir.wstring() << L'\n';
+	}
+
+	if (parser.hasCommand(L"launch")) {
+		if (existingPEDir.has_value()) {
+			if ((int)RunExternalProgram((peDir / L"PEOutside.exe").wstring(), L"runas") <= 32) {
+				wcerr << L"[错误] 无法启动 PEOutside.exe！\n";
+				system("pause");
+			};
+		}
+		else {
+			wcerr << L"[错误] 未找到 PE 目录，无法启动！\n";
+			system("pause");
+		}
+		return 0;
+	}
+
+	// 命令行 cleanup 处理
+	if (parser.hasCommand(L"cleanup")) {
+		PerformCleanup(peDir);
+		return 0;
+	}
+
+	// 检查 boot.wim / boot.sdi 的有效性
+	fs::path sdiPath = GetCurrentProcessDir();
+	sdiPath = sdiPath / BOOT_SDI;
+	fs::path wimPath = GetCurrentProcessDir();
+	wimPath = wimPath / BOOT_WIM;
+	if (!fs::exists(sdiPath) || !fs::exists(wimPath)) {
+		wcerr << L"[错误] boot 文件（boot.sdi 或 boot.wim）不存在\n";
+		system("pause");
+		return 1;
+	}
+	if (fs::file_size(wimPath) <= 1024) {
+		wcerr << L"[错误] boot.wim 文件不合法（大小≤1024字节）\n";
+		system("pause");
+		return 1;
+	}
 
 	// 如果是首次运行且不在 PE 目录内，则执行安装
-	optional<fs::path> existingPEDir = FindHugoWinPEDirectory();
 	if (!isInsidePEDir && !existingPEDir.has_value()) {
 		if (FirstTimeInstall()) {
 			return 0;
@@ -482,43 +529,11 @@ int wmain(int argc, wchar_t* argv[]) {
 
 	// 如果程序不在 PE 目录内，但有已存在的 PE 目录，则启动其中的副本
 	if (!isInsidePEDir && existingPEDir.has_value()) {
-		RunExternalProgram((existingPEDir.value() / L"PEOutside.exe").wstring(), L"runas");
+		if ((int)RunExternalProgram((peDir / L"PEOutside.exe").wstring(), L"runas") <= 32) {
+			wcerr << L"[错误] 无法启动 PEOutside.exe！\n";
+			system("pause");
+		};
 		return 0;
-	}
-
-	// 确定最终使用的 PE 目录
-	fs::path peDir;
-	if (isInsidePEDir) {
-		peDir = currentExeDir;
-	}
-	else if (existingPEDir.has_value()) {
-		peDir = *existingPEDir;
-		wcout << L"[找到] PE 目录: " << peDir.wstring() << L'\n';
-	}
-	else {
-		wcerr << L"[错误] 无法确定 PE 目录！\n";
-		system("pause");
-		return 1;
-	}
-
-	// 命令行 cleanup 处理
-	if (parser.hasCommand(L"cleanup")) {
-		PerformCleanup(peDir);
-		return 0;
-	}
-
-	// 检查 boot.wim / boot.sdi 的有效性
-	fs::path sdiPath = peDir / BOOT_SDI;
-	fs::path wimPath = peDir / BOOT_WIM;
-	if (!fs::exists(sdiPath) || !fs::exists(wimPath)) {
-		wcerr << L"[错误] boot 文件（boot.sdi 或 boot.wim）不存在\n";
-		system("pause");
-		return 1;
-	}
-	if (fs::file_size(wimPath) <= 1024) {
-		wcerr << L"[错误] boot.wim 文件不合法（大小≤1024字节）\n";
-		system("pause");
-		return 1;
 	}
 
 	// 进入交互菜单

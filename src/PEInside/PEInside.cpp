@@ -17,7 +17,7 @@ using namespace WinUtils;
 namespace fs = std::filesystem;
 using namespace WinUtils;
 
-// ===================== Configuration Struct =====================
+// Configuration Struct
 struct PEConfig
 {
 	bool Unfreeze = true;
@@ -26,7 +26,7 @@ struct PEConfig
 	std::string UserName;
 };
 
-// ===================== Utility: Find Real Physical System Drive =====================
+// Utility: Find Real Physical System Drive
 std::optional<fs::path> FindRealSystemDrive()
 {
 	char drives[256] = { 0 };
@@ -60,7 +60,7 @@ std::optional<fs::path> FindRealSystemDrive()
 	return std::nullopt;
 }
 
-// ===================== Utility: Traverse Drives to Find HugoWinPE =====================
+// Utility: Traverse Drives to Find HugoWinPE
 std::optional<fs::path> FindHugoWinPEDirectory()
 {
 	char drives[256] = { 0 };
@@ -82,7 +82,7 @@ std::optional<fs::path> FindHugoWinPEDirectory()
 	return std::nullopt;
 }
 
-// ===================== Utility: Read peconfig.ini Configuration =====================
+// Utility: Read peconfig.ini Configuration
 std::optional<PEConfig> ReadPEConfig(const fs::path& iniFilePath)
 {
 	if (!fs::exists(iniFilePath))
@@ -122,7 +122,7 @@ std::optional<PEConfig> ReadPEConfig(const fs::path& iniFilePath)
 	return config;
 }
 
-// ===================== Feature 1: Unfreeze =====================
+// Feature 1: Unfreeze
 bool ExecuteUnfreeze(const fs::path& systemDrive)
 {
 	fs::path targetFile = systemDrive / "ProgramData" / "SeewoFreezeKernelConfig" / "VolumeInfo.config";
@@ -146,7 +146,7 @@ bool ExecuteUnfreeze(const fs::path& systemDrive)
 	}
 }
 
-// ===================== Feature 2: RenameSSA =====================
+// Feature 2: RenameSSA
 bool ExecuteRenameSSA(const fs::path& systemDrive)
 {
 	fs::path srcFile = systemDrive / "Program Files (x86)" / "Seewo" / "SeewoService";
@@ -171,7 +171,7 @@ bool ExecuteRenameSSA(const fs::path& systemDrive)
 	}
 }
 
-// ===================== Utility: Create Shortcut =====================
+// Utility: Create Shortcut
 bool CreateShortcut(
 	const std::string& targetExe,
 	const std::string& args,
@@ -209,7 +209,7 @@ bool CreateShortcut(
 	return SUCCEEDED(hr);
 }
 
-// ===================== Feature 3: Create Startup Shortcut =====================
+// Feature 3: Create Startup Shortcut
 bool ExecuteCreateLink(const fs::path& hugoDir, const std::string& userName, const fs::path& systemDrive)
 {
 	fs::path outsideExe = hugoDir / "PEOutside.exe";
@@ -237,7 +237,7 @@ bool ExecuteCreateLink(const fs::path& hugoDir, const std::string& userName, con
 	return ret;
 }
 
-// ===================== Main Function =====================
+// Main Function
 int WINAPI WinMain(
 	HINSTANCE hInstance,
 	HINSTANCE hPrevInstance,
