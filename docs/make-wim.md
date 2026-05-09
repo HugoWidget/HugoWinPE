@@ -36,7 +36,7 @@ dism /Mount-Image /ImageFile:"C:\WinPE\media\sources\boot.wim" /index:1 /MountDi
 1. 最终文件树：
 
 ```txt
-E:\HUGROWINPE0\BOOT\WINDOWS
+C:\WinPE\mount\Windows
 ├─AppCompat
 ├─...
 ├─PETools                   <--------- PETools 仓库中的程序
@@ -101,10 +101,14 @@ echo ===========================================================================
 
 @echo on
 ```
-
+3. 编辑`PELauncher.txt`：
+```txt
+PEInside.exe
+PEMenu.exe
+```
 ---
 
-## 五、添加中文语言包
+## 五、添加中文语言包（可选）
 
 ```cmd
 dism /Add-Package /Image:"C:\WinPE\mount" /PackagePath:"WinPE_OCs\zh-cn\lp.cab"
@@ -137,4 +141,8 @@ MakeWinPEMedia /ISO C:\WinPE C:\WinPE\pe_new.iso
 
 ## 七、启动测试
 
-将生成的 `pe_new.iso` 挂载到虚拟机或刻录到 U 盘启动即可。
+方式：
+
+1. 使用PEOutside进入
+
+2. 将生成的 `pe_new.iso` 挂载到虚拟机或刻录到 U 盘启动
