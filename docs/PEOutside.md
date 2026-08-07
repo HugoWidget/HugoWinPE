@@ -44,12 +44,18 @@ PEOutside 是主控程序，运行于正常的 Windows 系统中，用于管理 
 
 在正常 Windows 启动后，若启动目录中存在 `PEOutside_Cleanup.lnk`，系统会自动执行：
 ```cmd
-PEOutside.exe -cleanup
+PEOutside.exe -cleanup -custom
 ```
 该命令将：
 - 从备份文件恢复 BCD
+
 - 如果存在 `SeewoService2` 目录，将其重命名回 `SeewoService`
+
 - 删除启动目录中的快捷方式
+
+- 执行同目录下的`Launcher.exe`，你可以修改`Launcher.ini`实现自定义操作
+
+  [文件格式见此](https://github.com/howdy213/WinTools)
 
 也可手动以管理员身份运行：
 ```cmd
@@ -62,6 +68,7 @@ PEOutside.exe /cleanup
 | ---------- | ------------------------------------------------------------ |
 | `/launch`  | 自动搜索系统盘中的 `HugoWinPE\PEOutside.exe` 并以管理员权限启动 |
 | `/cleanup` | 执行清理恢复操作                                             |
+| `/custom`  | 当在清理模式下附带此选项时，会执行`Launcher.exe`             |
 | 无参数     | 正常模式，显示交互菜单                                       |
 
 ## 配置文件说明
@@ -74,6 +81,8 @@ PEOutside.exe /cleanup
    对应 `RenameSSA = true/false`
 3. **启用清理（开启后自动还原希沃管家） (Y/N)**  
    对应 `CreateLink = true/false`
+
+一般 2 和 3 会同时勾选，否则需手动将希沃管家目录名还原
 
 生成的配置示例：
 ```ini

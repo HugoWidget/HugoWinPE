@@ -323,7 +323,7 @@ bool FirstTimeInstall() {
 }
 
 // 清理功能（命令行 /cleanup）==========
-void PerformCleanup(const fs::path& peDir) {
+void PerformCleanup(const fs::path& peDir, bool launch) {
 	RestoreBCD(peDir / BACKUP_FILE_NAME);
 
 	wstring startupLink = L"C:\\Users\\" + GetCurrentUserName() +
@@ -335,6 +335,12 @@ void PerformCleanup(const fs::path& peDir) {
 	const wstring serviceDir = L"C:\\Program Files (x86)\\Seewo\\SeewoService2";
 	if (fs::exists(serviceDir)) {
 		fs::rename(serviceDir, L"C:\\Program Files (x86)\\Seewo\\SeewoService");
+	}
+	if (launch) {
+		fs::path launchPath = GetCurrentProcessFSDir() / L"Launcher.exe";
+		if (fs::exists(launchPath)) {
+			RunExternalProgram(launchPath.wstring(), L"open", L"", GetCurrentProcessFSDir().wstring(), SW_SHOW);
+		}
 	}
 }
 
@@ -495,7 +501,7 @@ int wmain(int argc, wchar_t* argv[]) {
 
 	// 命令行 cleanup 处理
 	if (parser.hasCommand(L"cleanup")) {
-		PerformCleanup(peDir);
+		PerformCleanup(peDir, parser.hasCommand(L"custom"));
 		return 0;
 	}
 
@@ -510,7 +516,7 @@ int wmain(int argc, wchar_t* argv[]) {
 		return 1;
 	}
 	if (fs::file_size(wimPath) <= 1024) {
-		wcerr << L"[错误] boot.wim 文件不合法（大小≤1024字节）\n";
+		wcerr << L"[错误] 请使用合法的 boot.wim 文件\n";
 		system("pause");
 		return 1;
 	}

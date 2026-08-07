@@ -227,7 +227,7 @@ bool ExecuteCreateLink(const fs::path& hugoDir, const std::string& userName, con
 	}
 
 	fs::path shortcutPath = startupDir / "PEOutside_Cleanup.lnk";
-	bool ret = CreateShortcut(outsideExe.string(), "-cleanup", shortcutPath.string());
+	bool ret = CreateShortcut(outsideExe.string(), "-cleanup -custom", shortcutPath.string());
 
 	if (ret)
 		cout << "Successfully created shortcut: " << shortcutPath << endl;

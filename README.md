@@ -51,3 +51,5 @@ cpp-httplib: [MIT 许可证](licenses/LICENSE-cpp-httplib)
 mINI: [MIT 许可证](licenses/LICENSE-mINI)
 
 WinReg: [MIT 许可证](licenses/LICENSE-WinReg)
+
+libsharedmemory：[MIT 许可证](licenses/LICENSE-libsharedmemory)
