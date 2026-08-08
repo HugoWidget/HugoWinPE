@@ -323,7 +323,7 @@ bool FirstTimeInstall() {
 }
 
 // 清理功能（命令行 /cleanup）==========
-void PerformCleanup(const fs::path& peDir, bool launch) {
+void PerformCleanup(const fs::path& peDir) {
 	RestoreBCD(peDir / BACKUP_FILE_NAME);
 
 	wstring startupLink = L"C:\\Users\\" + GetCurrentUserName() +
@@ -335,12 +335,6 @@ void PerformCleanup(const fs::path& peDir, bool launch) {
 	const wstring serviceDir = L"C:\\Program Files (x86)\\Seewo\\SeewoService2";
 	if (fs::exists(serviceDir)) {
 		fs::rename(serviceDir, L"C:\\Program Files (x86)\\Seewo\\SeewoService");
-	}
-	if (launch) {
-		fs::path launchPath = GetCurrentProcessFSDir() / L"Launcher.exe";
-		if (fs::exists(launchPath)) {
-			RunExternalProgram(launchPath.wstring(), L"open", L"", GetCurrentProcessFSDir().wstring(), SW_SHOW);
-		}
 	}
 }
 
@@ -485,6 +479,15 @@ int wmain(int argc, wchar_t* argv[]) {
 		wcout << L"[找到] PE 目录: " << peDir.wstring() << L'\n';
 	}
 
+	// 命令行 custom 处理（用于启动 Launcher.exe 的副本）
+	if (parser.hasCommand(L"custom")) {
+		fs::path launchPath = GetCurrentProcessFSDir() / L"Launcher.exe";
+		if (fs::exists(launchPath)) {
+			RunExternalProgram(launchPath.wstring(), L"open", L"", GetCurrentProcessFSDir().wstring(), SW_SHOW);
+		}
+	}
+
+	// 命令行 launch 处理
 	if (parser.hasCommand(L"launch")) {
 		if (existingPEDir.has_value()) {
 			if ((int)RunExternalProgram((peDir / L"PEOutside.exe").wstring(), L"runas") <= 32) {
@@ -501,7 +504,7 @@ int wmain(int argc, wchar_t* argv[]) {
 
 	// 命令行 cleanup 处理
 	if (parser.hasCommand(L"cleanup")) {
-		PerformCleanup(peDir, parser.hasCommand(L"custom"));
+		PerformCleanup(peDir);
 		return 0;
 	}
 
