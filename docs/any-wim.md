@@ -1,6 +1,6 @@
 # 使用其他 WinPE
 
-没有键盘，也不想自己做：
+有键盘，不想自己做，也不想找：
 
 1. 找到`Winre.wim`：
 
@@ -27,7 +27,7 @@
    │  PELauncher.txt
    │  PEMenu.exe
    │  PEOutside.exe
-   │  Screenboard.exe <-屏幕键盘，需触摸屏在WinPE下可用（一般可以）
+   │  Screenboard.exe <-可选屏幕键盘，需触摸屏在WinPE下可用（一般可以）
    │  vcruntime140_1.dll
    │
    └─_internal <-一定要保证文件夹存在
@@ -46,4 +46,4 @@
 
 10. 操作结束后使用 `wpeutil reboot` 或 已经运行的`PEMenu` 重启
 
-如果键盘或者有其他WinPE就不需要使用这种方法了，直接操作说不定会快一些......
+有其他WinPE或者有修改工具就不需要使用这种方法了
